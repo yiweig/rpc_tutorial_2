@@ -18,10 +18,10 @@ type (
 	}
 
 	Requests struct {
-		Get    uint64
-		Put    uint64
-		Delete uint64
-		Clear  uint64
+		Get    int
+		Put    int
+		Delete int
+		Clear  int
 	}
 )
 
@@ -94,5 +94,19 @@ func (r *RPC) Clear(skip bool, ack *bool) error {
 
 func (r *RPC) Stats(skip bool, requests *Requests) error {
 	*requests = *r.requests
+	return nil
+}
+
+func (r *RPC) Reset(_ bool, ack *bool) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	r.requests.Get = 0
+	r.requests.Put = 0
+	r.requests.Delete = 0
+	r.requests.Clear = 0
+
+	*ack = true
+
 	return nil
 }

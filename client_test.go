@@ -4,18 +4,20 @@ import (
 	"log"
 	"testing"
 	"time"
+	"math"
+	"fmt"
 )
 
 var (
 	c   *Client
 	err error
 
-	dsn       = "localhost:9876"
+	dsn = "localhost:9876"
 	cacheItem = &CacheItem{Key: "some key", Value: "some value"}
 )
 
 func init() {
-	c, err = NewClient(dsn, time.Millisecond*500)
+	c, err = NewClient(dsn, time.Millisecond * 500)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,16 +71,52 @@ func TestStats(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if stats.Get != 1 {
-		t.Errorf("Get: expected 1, got %d\n", stats.Get)
+	maxCount := int(math.Inf(-1))
+
+	if stats.Get * 3 != c.getCount {
+		t.Errorf("Get: expected %d, got %d\n", stats.Get, c.getCount)
 	}
-	if stats.Put != 1 {
-		t.Errorf("Put: expected 1, got %d\n", stats.Put)
+	if stats.Put != c.putCount {
+		t.Errorf("Put: expected %d, got %d\n", stats.Put, c.putCount)
 	}
-	if stats.Delete != 1 {
-		t.Errorf("Delete: expected 1, got %d\n", stats.Delete)
+	if stats.Delete != c.deleteCount {
+		t.Errorf("Delete: expected %d, got %d\n", stats.Delete, c.deleteCount)
 	}
-	if stats.Clear != 1 {
-		t.Errorf("Clear: expected 1, got %d\n", stats.Clear)
+
+	fmt.Println(stats.Get)
+	fmt.Println(stats.Put)
+	fmt.Println(stats.Delete)
+
+	fmt.Println(c.getCount)
+	fmt.Println(c.putCount)
+	fmt.Println(c.deleteCount)
+
+	if stats.Get > maxCount {
+		maxCount = stats.Get
+	}
+	if stats.Put > maxCount {
+		maxCount = stats.Put
+	}
+	if stats.Delete > maxCount {
+		maxCount = stats.Delete
+	}
+
+	fmt.Println(maxCount)
+
+	if stats.Clear != maxCount {
+		t.Errorf("Clear: expected 1, got %d with %d\n", stats.Clear, maxCount)
+	}
+}
+
+func TestReset(t *testing.T) {
+	reset, err := c.Reset()
+	if err != nil {
+		t.Error(err)
+	}
+
+	if reset == true {
+		t.Logf("Reset!")
+	} else {
+		t.Error(err)
 	}
 }
