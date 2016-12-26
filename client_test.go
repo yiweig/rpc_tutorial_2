@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 	"math"
-	"fmt"
 )
 
 var (
@@ -83,14 +82,6 @@ func TestStats(t *testing.T) {
 		t.Errorf("Delete: expected %d, got %d\n", stats.Delete, c.deleteCount)
 	}
 
-	fmt.Println(stats.Get)
-	fmt.Println(stats.Put)
-	fmt.Println(stats.Delete)
-
-	fmt.Println(c.getCount)
-	fmt.Println(c.putCount)
-	fmt.Println(c.deleteCount)
-
 	if stats.Get > maxCount {
 		maxCount = stats.Get
 	}
@@ -100,8 +91,6 @@ func TestStats(t *testing.T) {
 	if stats.Delete > maxCount {
 		maxCount = stats.Delete
 	}
-
-	fmt.Println(maxCount)
 
 	if stats.Clear != maxCount {
 		t.Errorf("Clear: expected 1, got %d with %d\n", stats.Clear, maxCount)
