@@ -17,7 +17,4 @@ go test &
 go test & 
 go test &
 
-
-
-
 wait
