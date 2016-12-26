@@ -65,7 +65,7 @@ func (c *Client) Stats() (*Requests, error) {
 	return requests, err
 }
 
-// Reset all ßcounters
+// Reset all counters.
 func (c *Client) Reset() (bool, error) {
 	var reset bool
 	err := c.connection.Call("RPC.Reset", true, &reset)

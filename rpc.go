@@ -33,7 +33,7 @@ var (
 	ErrNotFound = errors.New("Cache key not found")
 )
 
-// CreateNewRPC constructor
+// CreateNewRPC constructor.
 func CreateNewRPC() *RPC {
 	return &RPC{
 		cache:    make(map[string]string),
