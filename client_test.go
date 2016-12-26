@@ -2,21 +2,21 @@ package main
 
 import (
 	"log"
+	"math"
 	"testing"
 	"time"
-	"math"
 )
 
 var (
 	c   *Client
 	err error
 
-	dsn = "localhost:9876"
+	dsn       = "localhost:9876"
 	cacheItem = &CacheItem{Key: "some key", Value: "some value"}
 )
 
 func init() {
-	c, err = NewClient(dsn, time.Millisecond * 500)
+	c, err = NewClient(dsn, time.Millisecond*500)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,7 +72,7 @@ func TestStats(t *testing.T) {
 	}
 	maxCount := int(math.Inf(-1))
 
-	if stats.Get * 3 != c.getCount {
+	if stats.Get*3 != c.getCount {
 		t.Errorf("Get: expected %d, got %d\n", stats.Get, c.getCount)
 	}
 	if stats.Put != c.putCount {
