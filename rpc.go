@@ -6,17 +6,20 @@ import (
 )
 
 type (
+	// RPC server struct.
 	RPC struct {
 		cache    map[string]string
 		requests *Requests
 		mu       *sync.RWMutex
 	}
 
+	// CacheItem for our cache.
 	CacheItem struct {
 		Key   string
 		Value string
 	}
 
+	// Requests object for making calls.
 	Requests struct {
 		Get    int
 		Put    int
@@ -26,10 +29,12 @@ type (
 )
 
 var (
-	NotFoundError = errors.New("Cache key not found")
+	// ErrNotFound for cache misses.
+	ErrNotFound = errors.New("Cache key not found")
 )
 
-func NewRPC() *RPC {
+// CreateNewRPC constructor
+func CreateNewRPC() *RPC {
 	return &RPC{
 		cache:    make(map[string]string),
 		requests: &Requests{},
@@ -37,6 +42,7 @@ func NewRPC() *RPC {
 	}
 }
 
+// Get from the cache
 func (r *RPC) Get(key string, resp *CacheItem) (err error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -44,7 +50,7 @@ func (r *RPC) Get(key string, resp *CacheItem) (err error) {
 	cacheValue, found := r.cache[key]
 
 	if !found {
-		return NotFoundError
+		return ErrNotFound
 	}
 
 	*resp = CacheItem{key, cacheValue}
@@ -52,6 +58,7 @@ func (r *RPC) Get(key string, resp *CacheItem) (err error) {
 	return nil
 }
 
+// Put into the cache
 func (r *RPC) Put(item *CacheItem, ack *bool) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -63,6 +70,7 @@ func (r *RPC) Put(item *CacheItem, ack *bool) error {
 	return nil
 }
 
+// Delete from the cache
 func (r *RPC) Delete(key string, ack *bool) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -71,7 +79,7 @@ func (r *RPC) Delete(key string, ack *bool) error {
 	_, found = r.cache[key]
 
 	if !found {
-		return NotFoundError
+		return ErrNotFound
 	}
 
 	delete(r.cache, key)
@@ -81,6 +89,7 @@ func (r *RPC) Delete(key string, ack *bool) error {
 	return nil
 }
 
+// Clear the cache
 func (r *RPC) Clear(skip bool, ack *bool) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -92,11 +101,13 @@ func (r *RPC) Clear(skip bool, ack *bool) error {
 	return nil
 }
 
+// Stats will get the stats.
 func (r *RPC) Stats(skip bool, requests *Requests) error {
 	*requests = *r.requests
 	return nil
 }
 
+// Reset will reset all values on the server to 0.
 func (r *RPC) Reset(_ bool, ack *bool) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

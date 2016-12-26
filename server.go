@@ -12,7 +12,7 @@ func init() {
 }
 
 func main() {
-	rpc.Register(NewRPC())
+	rpc.Register(CreateNewRPC())
 
 	l, e := net.Listen("tcp", ":9876")
 	if e != nil {

@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	c, err = NewClient(dsn, time.Millisecond*500)
+	c, err = CreateNewClient(dsn, time.Millisecond*500)
 	if err != nil {
 		log.Fatal(err)
 	}
