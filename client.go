@@ -28,9 +28,12 @@ func CreateNewClient(dsn string, timeout time.Duration) (*Client, error) {
 	return &Client{connection: rpc.NewClient(connection)}, nil
 }
 
+// GetTopStories calls the NYT Top Stories API.
 func (c *Client) GetTopStories() (map[string]interface{}, error) {
+	// http://stackoverflow.com/a/21939636/1470257
 	gob.Register([]interface{}{})
 	gob.Register(map[string]interface{}{})
+
 	params := "url"
 	dat := make(map[string]interface{})
 	log.Println("GetTopStories called and dat created")

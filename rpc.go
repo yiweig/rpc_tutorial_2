@@ -52,6 +52,7 @@ func CreateNewRPC() *RPC {
 	}
 }
 
+// CreateNewRPCForREST constructor.
 func CreateNewRPCForREST() *RPCForREST {
 	return &RPCForREST{
 		// "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=1865cb7220b54b56aedd9e8ab53130c9"
@@ -60,21 +61,13 @@ func CreateNewRPCForREST() *RPCForREST {
 	}
 }
 
-// func (r *RPCForREST) GetTopStories(_ interface{}, resp *map[string]interface{}) (err error) {
-// 	client := &http.Client{Timeout: 10 * time.Second}
-// 	var url = r.URL + "?api-key=" + r.apiKey
-// 	response, err := client.Get(url)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer response.Body.Close()
-
-// 	return json.NewDecoder(response.Body).Decode(resp)
-// }
-
+// GetTopStories calles the NYT Top Stories API.
 func (r *RPCForREST) GetTopStories(url string, target *map[string]interface{}) error {
+	// http://stackoverflow.com/a/21939636/1470257
 	gob.Register([]interface{}{})
 	gob.Register(map[string]interface{}{})
+
+	// http://stackoverflow.com/a/31129967/1470257
 	var myClient = &http.Client{Timeout: 10 * time.Second}
 	resp, err := myClient.Get(r.URL + "?api-key=" + r.apiKey)
 	if err != nil {
