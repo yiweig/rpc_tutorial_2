@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/gob"
+	"log"
 	"net"
 	"net/rpc"
 	"time"
@@ -24,6 +26,17 @@ func CreateNewClient(dsn string, timeout time.Duration) (*Client, error) {
 		return nil, err
 	}
 	return &Client{connection: rpc.NewClient(connection)}, nil
+}
+
+func (c *Client) GetTopStories() (map[string]interface{}, error) {
+	gob.Register([]interface{}{})
+	gob.Register(map[string]interface{}{})
+	params := "url"
+	dat := make(map[string]interface{})
+	log.Println("GetTopStories called and dat created")
+	err := c.connection.Call("RPCForREST.GetTopStories", params, &dat)
+	log.Println("rpc called!")
+	return dat, err
 }
 
 // Get from the server.

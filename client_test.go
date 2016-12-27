@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -108,4 +109,24 @@ func TestReset(t *testing.T) {
 	} else {
 		t.Error(err)
 	}
+}
+
+func TestREST(t *testing.T) {
+	rest, err := c.GetTopStories()
+	if err != nil {
+		t.Error(err)
+	}
+
+	log.Println(rest)
+	s := len(rest)
+	log.Println(s)
+	var typ = reflect.TypeOf(rest)
+	log.Println(typ)
+
+	keys := make([]string, 0, s)
+	for k := range rest {
+		keys = append(keys, k)
+	}
+	log.Println(keys)
+
 }

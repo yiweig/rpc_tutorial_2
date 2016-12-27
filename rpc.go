@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
+	"encoding/json"
 	"errors"
+	"net/http"
 	"sync"
+	"time"
 )
 
 type (
@@ -11,6 +15,12 @@ type (
 		cache    map[string]string
 		requests *Requests
 		mu       *sync.RWMutex
+	}
+
+	// RPCForREST will call a REST endpoint.
+	RPCForREST struct {
+		URL    string
+		apiKey string
 	}
 
 	// CacheItem for our cache.
@@ -40,6 +50,39 @@ func CreateNewRPC() *RPC {
 		requests: &Requests{},
 		mu:       &sync.RWMutex{},
 	}
+}
+
+func CreateNewRPCForREST() *RPCForREST {
+	return &RPCForREST{
+		// "https://api.nytimes.com/svc/topstories/v2/home.json?api-key=1865cb7220b54b56aedd9e8ab53130c9"
+		URL:    "https://api.nytimes.com/svc/topstories/v2/home.json",
+		apiKey: "1865cb7220b54b56aedd9e8ab53130c9",
+	}
+}
+
+// func (r *RPCForREST) GetTopStories(_ interface{}, resp *map[string]interface{}) (err error) {
+// 	client := &http.Client{Timeout: 10 * time.Second}
+// 	var url = r.URL + "?api-key=" + r.apiKey
+// 	response, err := client.Get(url)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer response.Body.Close()
+
+// 	return json.NewDecoder(response.Body).Decode(resp)
+// }
+
+func (r *RPCForREST) GetTopStories(url string, target *map[string]interface{}) error {
+	gob.Register([]interface{}{})
+	gob.Register(map[string]interface{}{})
+	var myClient = &http.Client{Timeout: 10 * time.Second}
+	resp, err := myClient.Get(r.URL + "?api-key=" + r.apiKey)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	return json.NewDecoder(resp.Body).Decode(target)
 }
 
 // Get from the cache
